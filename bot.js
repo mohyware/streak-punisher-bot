@@ -53,11 +53,7 @@ client.on('messageCreate', async (message) => {
             return message.reply('❌ The problem was not found.');
         }
 
-        else if (error instanceof mongoose.Error.CastError && error.kind === 'ObjectId') {
-            message.reply('❌ Invalid ID format. Please check your inputs and try again.');
-        } else if (error instanceof mongoose.Error.ValidationError) {
-            message.reply('❌ Validation error. Please ensure all required fields are filled out correctly.');
-        } else if (error instanceof mongoose.Error) {
+        else if (error instanceof mongoose.Error) {
             message.reply('❌ An error occurred while interacting with the database.');
         }
 
