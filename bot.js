@@ -1,7 +1,9 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
-const connectToDatabase = require('./service/database/connection');
+const connectToDatabase = require('./services/database/connection');
 const { addUser, getUser, updateUser, deleteUser } = require('./commands/user-commands');
+const { addProblem, deleteProblem } = require('./commands/problem-commands');
+const mongoose = require('mongoose');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
@@ -28,15 +30,38 @@ client.on('messageCreate', async (message) => {
         else if (command === 'escape') {
             await deleteUser(args, message);
         }
+        else if (command === 'addproblem') {
+            await addProblem(args, message);
+        }
+        else if (command === 'deleteproblem') {
+            await deleteProblem(args, message);
+        }
     } catch (error) {
         console.error(error);
 
         if (error.message === 'User already exists') {
             return message.reply('❌ The user already exists with that name.');
         }
-        else if (error instanceof mongoose.Error) {
+        else if (error.message === 'User not found') {
+            return message.reply('❌ The user was not found.');
+        }
+
+        else if (error.message === 'Problem already exists') {
+            return message.reply('❌ The problem already exists with that ID.');
+        }
+        else if (error.message === 'Problem not found') {
+            return message.reply('❌ The problem was not found.');
+        }
+
+        else if (error instanceof mongoose.Error.CastError && error.kind === 'ObjectId') {
+            message.reply('❌ Invalid ID format. Please check your inputs and try again.');
+        } else if (error instanceof mongoose.Error.ValidationError) {
+            message.reply('❌ Validation error. Please ensure all required fields are filled out correctly.');
+        } else if (error instanceof mongoose.Error) {
             message.reply('❌ An error occurred while interacting with the database.');
-        } else {
+        }
+
+        else {
             message.reply('❌ An error occurred while processing your request.');
         }
     }
