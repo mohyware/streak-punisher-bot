@@ -4,7 +4,7 @@ const formatter = require('../utils/user-formatter');
 const addUser = async (args, message) => {
     try {
         const [name, leetcode_username, codeforces_username] = args;
-
+        const discordId = message.author.id;
         if (!name || (!leetcode_username && !codeforces_username) ||
             (leetcode_username === 'null' && codeforces_username === 'null')) {
             return message.reply(
@@ -14,7 +14,7 @@ const addUser = async (args, message) => {
             );
         }
 
-        await UserController.addUser(name, leetcode_username, codeforces_username);
+        await UserController.addUser(name, leetcode_username, codeforces_username, discordId);
         message.reply(`✅ **User ${name} added successfully!** 🎉`);
     } catch (error) {
         throw error;

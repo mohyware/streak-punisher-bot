@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     name: { type: String, unique: true, required: true },
+    discordId: { type: String, required: true },
     leetcode_username: { type: String, default: null },
     codeforces_username: { type: String, default: null },
     leetcode_totalSubmissions: { type: Number, default: 0 },
