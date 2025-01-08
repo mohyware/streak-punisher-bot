@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const User = require('../models/user-model');
 
 const searchForUser = async (searchQuery) => {
     let user = await User.findOne({ name: searchQuery });
@@ -42,7 +42,6 @@ const addUser = async (name, leetcode_username, codeforces_username, discord_id)
     });
 
     await user.save();
-    console.log("user == ", user);
     return user;
 }
 

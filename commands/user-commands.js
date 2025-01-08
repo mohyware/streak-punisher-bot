@@ -1,4 +1,4 @@
-const UserController = require('../controller/user');
+const UserController = require('../controllers/user-controller');
 const formatter = require('../utils/user-formatter');
 
 const addUser = async (args, message) => {
