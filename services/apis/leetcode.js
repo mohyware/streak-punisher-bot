@@ -69,7 +69,7 @@ async function fetchUserStats(username) {
     }
 }
 
-async function fetchAllProblemStats(username) {
+async function fetchRecentSubmissions(username) {
     try {
         // Fetch the list of recent problems
         const recentProblemSlugs = await fetchTodaySolvedProblems(username);
@@ -164,5 +164,5 @@ async function fetchTodaySolvedProblems(username) {
 module.exports = {
     fetchUserStats,
     checkUserExists,
-    fetchAllProblemStats
+    fetchRecentSubmissions
 }

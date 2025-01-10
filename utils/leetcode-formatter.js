@@ -1,5 +1,5 @@
 
-const leetcodeFormatter = (submissions, userId) => {
+const LC_problemsFormatter = (submissions, userId) => {
     const uniqueSubmissions = new Map();
 
     submissions.forEach((submission) => {
@@ -21,4 +21,4 @@ const leetcodeFormatter = (submissions, userId) => {
 
     return Array.from(uniqueSubmissions.values());
 };
-module.exports = { leetcodeFormatter };
+module.exports = { LC_problemsFormatter };

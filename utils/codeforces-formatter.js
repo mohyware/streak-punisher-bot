@@ -1,4 +1,4 @@
-const recentSubmissionFormatter = (submissions, userId) => {
+const CF_problemsFormatter = (submissions, userId) => {
     const uniqueSubmissions = new Map();
 
     submissions.forEach((submission) => {
@@ -31,7 +31,7 @@ const recentSubmissionFormatter = (submissions, userId) => {
     return Array.from(uniqueSubmissions.values());
 };
 
-const statusFormatter = (data) => {
+const CF_statusFormatter = (data) => {
     const submissions = data.result;
     const totalSubmissions = submissions.length;
 
@@ -49,4 +49,4 @@ const statusFormatter = (data) => {
     return { totalSubmissions, totalUniqueAccepted };
 }
 
-module.exports = { recentSubmissionFormatter, statusFormatter };
+module.exports = { CF_problemsFormatter, CF_statusFormatter };
