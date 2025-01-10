@@ -1,48 +1,75 @@
 const User = require('../models/user-model');
+const leetcode = require('../services/apis/leetcode');
+const codeforces = require('../services/apis/codeforces');
+const CustomError = require('../utils/custom-error');
 
 const searchForUser = async (searchQuery) => {
-    let user = await User.findOne({ name: searchQuery });
+    try {
 
-    if (!user) {
-        user = await User.findOne({ codeforces_username: searchQuery });
+        let user = await User.findOne({ name: searchQuery });
 
         if (!user) {
-            user = await User.findOne({ leetcode_username: searchQuery });
+            user = await User.findOne({ codeforces_username: searchQuery });
+
+            if (!user) {
+                user = await User.findOne({ leetcode_username: searchQuery });
+            }
         }
-    }
 
-    if (!user) {
-        return null;
-    }
+        if (!user) {
+            return null;
+        }
 
-    return user;
+        return user;
+    } catch (error) {
+        throw error;
+    }
 };
 
 const getUser = async (searchQuery) => {
-    const user = await searchForUser(searchQuery);
-    return user;
+    try {
+        const user = await searchForUser(searchQuery);
+        return user;
+    } catch (error) {
+        throw error;
+    }
 }
 const addUser = async (name, leetcode_username, codeforces_username, discord_id) => {
-    const nameCheck = await searchForUser(name);
-    const leetcode_usernameCheck = await searchForUser(leetcode_username);
-    const codeforces_usernameCheck = await searchForUser(codeforces_username);
+    try {
 
-    if (nameCheck || leetcode_usernameCheck || codeforces_usernameCheck) {
-        throw new Error('User already exists');
+        // Check if user already exists in database
+        const nameCheck = await searchForUser(name);
+        const leetcode_usernameCheck = await searchForUser(leetcode_username);
+        const codeforces_usernameCheck = await searchForUser(codeforces_username);
+
+        if (nameCheck || leetcode_usernameCheck || codeforces_usernameCheck) {
+            throw new CustomError('this username already exists');
+        }
+
+        // Check if user handles exists on leetcode and codeforces
+        const LC_checkUserExists = await leetcode.checkUserExists(leetcode_username);
+        const CF_checkUserExists = await codeforces.checkUserExists(codeforces_username);
+
+        if (!LC_checkUserExists || !CF_checkUserExists) {
+            throw new CustomError('User does not exist on LeetCode or Codeforces');
+        }
+
+        const LC_username = leetcode_username === 'null' ? undefined : leetcode_username;
+        const FC_username = codeforces_username === 'null' ? undefined : codeforces_username;
+
+        const user = new User({
+            name,
+            leetcode_username: LC_username,
+            codeforces_username: FC_username,
+            discordId: discord_id,
+            total_acSubmissions: 0,
+        });
+
+        await user.save();
+        return user;
+    } catch (error) {
+        throw error;
     }
-    const leetcode = leetcode_username === 'null' ? undefined : leetcode_username;
-    const codeforces = codeforces_username === 'null' ? undefined : codeforces_username;
-
-    const user = new User({
-        name,
-        leetcode_username: leetcode,
-        codeforces_username: codeforces,
-        discordId: discord_id,
-        total_acSubmissions: 0,
-    });
-
-    await user.save();
-    return user;
 }
 
 const updateUser = async (name, newLeetcodeUsername, newCodeforcesUsername) => {
@@ -53,7 +80,7 @@ const updateUser = async (name, newLeetcodeUsername, newCodeforcesUsername) => {
         const codeforces_usernameCheck = await searchForUser(newCodeforcesUsername);
 
         if (nameCheck || leetcode_usernameCheck || codeforces_usernameCheck) {
-            throw new Error('User already exists');
+            throw new CustomError('this username already exists');
         }
 
         const user = await User.findOneAndUpdate(
@@ -69,9 +96,13 @@ const updateUser = async (name, newLeetcodeUsername, newCodeforcesUsername) => {
 }
 
 const deleteUser = async (searchQuery) => {
-    const user = await searchForUser(searchQuery);
-    const deletedUser = await User.findOneAndDelete({ name: user.name });
-    return deletedUser;
+    try {
+        const user = await searchForUser(searchQuery);
+        const deletedUser = await User.findOneAndDelete({ name: user.name });
+        return deletedUser;
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = {
