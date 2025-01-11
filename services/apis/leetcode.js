@@ -25,8 +25,12 @@ async function checkUserExists(username) {
         const response = await axios.request(config);
         const data = response.data;
 
+        // handle error if user does not exist
         if (data.errors) {
-            throw new Error(data.errors.map((err) => err.message).join(", "));
+            if (data.errors[0].message === 'That user does not exist.') {
+                return false;
+            }
+            throw new Error(data.errors.map((err) => err.message).join(', '));
         }
 
         return data.data.matchedUser !== null; // Return true if user exists, false otherwise
