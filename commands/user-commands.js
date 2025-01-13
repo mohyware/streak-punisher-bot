@@ -1,5 +1,6 @@
 const UserController = require('../controllers/user-controller');
-const formatter = require('../utils/user-formatter');
+const { formatUserData, formatProblems } = require('../utils/user-formatter');
+const problemController = require('../controllers/problem-controller');
 
 const addUser = async (args, message) => {
     try {
@@ -15,6 +16,7 @@ const addUser = async (args, message) => {
         }
 
         await UserController.addUser(name, leetcode_username, codeforces_username, discordId);
+        await problemController.updateUserProblems(discordId);
         message.reply(`✅ **User ${name} added successfully!** 🎉`);
     } catch (error) {
         throw error;
@@ -31,13 +33,24 @@ const getUser = async (args, message) => {
         }
 
         const user = await UserController.getUser(searchQuery);
+        if (!user) {
+            return message.reply(`❌ **No user found** with query: \`${searchQuery}\` 🔍`);
+        }
+        const data = formatUserData(user);
+
+        const stats = await problemController.getTodayStats(user.discordId);
+        if (stats && stats.todaySolved && stats.todaySolved.length > 0) {
+            const statsFormatted = formatProblems(stats);
+            const finalOutput = `${data}\n📊 ${statsFormatted}`;
+            message.reply(finalOutput);
+        } else {
+            const finalOutput = `${data}\n\n❗ **No Solved Problems for this user today.**`;
+            message.reply(finalOutput);
+        }
 
         if (!user) {
             return message.reply(`❌ **No user found** with search query: \`${searchQuery}\` 🔍`);
         }
-
-        const data = await formatter(user);
-        message.reply(`📄 **User Information:**\n${data}`);
     } catch (error) {
         throw error;
     }

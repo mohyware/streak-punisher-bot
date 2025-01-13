@@ -1,18 +1,25 @@
 const Problem = require('../models/problem-model');
 const User = require('../models/user-model');
+const CustomError = require('../utils/custom-error');
+const handleStreak = require('../utils/handle-streak');
+const platformController = require('../controllers/platform-controller')
 
 const searchForProblem = async (searchQuery, userId) => {
-    let problem = await Problem.findOne({ problemId: searchQuery, user: userId });
+    try {
+        let problem = await Problem.findOne({ problemId: searchQuery, user: userId });
 
-    if (!problem) {
-        problem = await Problem.findOne({ submissionId: searchQuery });
+        if (!problem) {
+            problem = await Problem.findOne({ submissionId: searchQuery });
+        }
+
+        if (!problem) {
+            return null;
+        }
+
+        return problem;
+    } catch (error) {
+        throw error;
     }
-
-    if (!problem) {
-        return null;
-    }
-
-    return problem;
 };
 
 const getProblem = async (searchQuery) => {
@@ -26,7 +33,7 @@ const addProblem = async (problemId, title, platform, submissionId, discord_Id) 
     const problemCheck = await searchForProblem(problemId, user._id) || await searchForProblem(submissionId, user._id);
 
     if (problemCheck) {
-        throw new Error('Problem already exists');
+        throw new CustomError('Problem already exists');
     }
 
     if (!user) {
@@ -45,6 +52,82 @@ const addProblem = async (problemId, title, platform, submissionId, discord_Id) 
     return problem;
 };
 
+const getTodayStats = async (discordId) => {
+    try {
+        const user = await User.findOne({ discordId });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        // check for leetcode and codeforces
+        await updateUserProblems(discordId);
+        // update streak
+        await handleStreak(user);
+        // return today problems
+        const todaySolved = await Problem.find({ user: user._id, createdAt: { $gte: new Date().setHours(0, 0, 0, 0) } });
+
+        return {
+            todaySolved,
+        };
+    } catch (error) {
+        throw new Error('Error fetching user streak');
+    }
+}
+
+const updateUserProblems = async (discordId) => {
+    try {
+
+        const user = await User.findOne({ discordId });
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        if (!user.leetcode_username && !user.codeforces_username) {
+            throw new Error('User does not have a LeetCode or Codeforces username');
+        }
+
+        const leetcodeProblems = user.leetcode_username
+            ? await platformController.getLeetcodeProblems(user.leetcode_username)
+            : [];
+        const codeforcesProblems = user.codeforces_username
+            ? await platformController.getCodeforcesProblems(user.codeforces_username)
+            : [];
+
+        const allProblems = [...leetcodeProblems, ...codeforcesProblems];
+
+        const submissions = allProblems.map((problem) => ({
+            ...problem,
+            user: user._id,
+            submissionId: problem.submissionId,
+        }));
+
+        try {
+            await Problem.insertMany(submissions, { ordered: true });
+        } catch (error) {
+            if (error.code === 11000 || error.message.includes('duplicate')) {
+                return null; // Return false for duplicates (no new problems)
+            }
+            throw new Error('Error inserting problems to database');
+        }
+
+        if (allProblems.length > 0) {
+            const lastSubmission = allProblems.reduce((latest, current) =>
+                latest.createdAt > current.createdAt ? latest : current
+            );
+
+            // check if there is any manual added problems that is more recent than the last submission
+            if (!user.lastSubmissionDate || lastSubmission.createdAt > user.lastSubmissionDate) {
+                user.lastSubmissionDate = lastSubmission.createdAt;
+                await user.save();
+            }
+        }
+
+        return user;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
 const deleteProblem = async (searchQuery, discordId) => {
     const user = await User.findOne({ discordId });
 
@@ -60,4 +143,6 @@ module.exports = {
     getProblem,
     addProblem,
     deleteProblem,
+    updateUserProblems,
+    getTodayStats,
 };

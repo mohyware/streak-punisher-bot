@@ -2,8 +2,9 @@ require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const connectToDatabase = require('./services/database/connection');
 const { addUser, getUser, updateUser, deleteUser } = require('./commands/user-commands');
-const { addProblem, deleteProblem } = require('./commands/problem-commands');
+const { addProblem, getAllUserStatistics, deleteProblem } = require('./commands/problem-commands');
 const mongoose = require('mongoose');
+const CustomError = require('./utils/custom-error');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
@@ -33,12 +34,18 @@ client.on('messageCreate', async (message) => {
         else if (command === 'addproblem') {
             await addProblem(args, message);
         }
+        else if (command === 'dailystreak') {
+            await getAllUserStatistics(args, message);
+        }
         else if (command === 'deleteproblem') {
             await deleteProblem(args, message);
         }
     } catch (error) {
         console.error(error);
 
+        if (error instanceof CustomError) {
+            return message.reply(error.message);
+        }
         if (error.message === 'User already exists') {
             return message.reply('❌ The user already exists with that name.');
         }
