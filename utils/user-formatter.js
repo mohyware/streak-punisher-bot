@@ -17,4 +17,11 @@ const formatUserData = (user) => {
         .join('\n');
 };
 
-module.exports = formatUserData;
+const formatProblems = (stats) => {
+    const statsFormatted = stats.todaySolved.map((item, index) => {
+        return `🔹 **Problem #${index + 1}:** ${item.title}  🆔${item.problemId}   🌐 **Platform:** ${item.platform}  📅 ${new Date(item.createdAt).toLocaleTimeString()}\n`;
+
+    }).join('');
+    return statsFormatted;
+}
+module.exports = { formatUserData, formatProblems };
