@@ -1,7 +1,9 @@
 const User = require('../models/user-model');
+const Problem = require('../models/problem-model');
 const leetcode = require('../services/apis/leetcode');
 const codeforces = require('../services/apis/codeforces');
 const CustomError = require('../utils/custom-error');
+const platformController = require('../controllers/platform-controller');
 
 const searchForUser = async (searchQuery) => {
     try {
@@ -65,6 +67,16 @@ const addUser = async (name, leetcode_username, codeforces_username, discord_id)
             total_acSubmissions: 0,
         });
 
+        // Add problems to user
+        if (LC_username) {
+            const lc = await platformController.addLeetcodeProblems(LC_username);
+            user.leetcode_acSubmissions = lc;
+        }
+        if (FC_username) {
+            const cf = await platformController.addCodeforcesProblems(FC_username);
+            user.codeforces_acSubmissions = cf;
+        }
+
         await user.save();
         return user;
     } catch (error) {
@@ -98,6 +110,7 @@ const updateUser = async (name, newLeetcodeUsername, newCodeforcesUsername) => {
 const deleteUser = async (searchQuery) => {
     try {
         const user = await searchForUser(searchQuery);
+        await Problem.deleteMany({ userId: user._id });
         const deletedUser = await User.findOneAndDelete({ name: user.name });
         return deletedUser;
     } catch (error) {
@@ -105,9 +118,22 @@ const deleteUser = async (searchQuery) => {
     }
 }
 
+const checkTodayStreak = async (username) => {
+    try {
+        const user = await User.findOne({ name: username });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return user.lastSubmissionDate;
+    } catch (error) {
+        throw new Error('Error fetching user streak');
+    }
+}
+
 module.exports = {
     getUser,
     addUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    checkTodayStreak
 }
