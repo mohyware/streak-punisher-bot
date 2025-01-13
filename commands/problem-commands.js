@@ -1,5 +1,6 @@
 const ProblemController = require('../controllers/problem-controller');
 const User = require('../models/user-model');
+const Problem = require('../models/problem-model');
 const { formatProblems } = require('../utils/user-formatter');
 const addProblem = async (args, message) => {
     try {
@@ -23,12 +24,13 @@ const getAllUserStatistics = async (args, message) => {
     try {
         const users = await User.find();
         const userStatsPromises = users.map(async (user) => {
+            const problemCount = await Problem.countDocuments({ user: user._id });
             const todayStats = await ProblemController.getTodayStats(user.discordId);
             return {
                 discordId: user.discordId,
                 name: user.name,
                 todaySolved: todayStats.todaySolved.length,
-                totalSolved: user.total_acSubmissions,
+                totalSolved: problemCount,
                 streak: user.streak,
                 problems: todayStats
             };

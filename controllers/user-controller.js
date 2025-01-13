@@ -39,14 +39,20 @@ const getUser = async (searchQuery) => {
 const addUser = async (name, leetcode_username, codeforces_username, discord_id) => {
     try {
 
+        // Check if discord id already exists in database
+        const discordIdCheck = await User.findOne({ discordId: discord_id });
+        if (discordIdCheck) {
+            throw new CustomError('Each discord user can only register once');
+        }
+
         // Check if user already exists in database
         const nameCheck = await searchForUser(name);
         const leetcode_usernameCheck = await searchForUser(leetcode_username);
         const codeforces_usernameCheck = await searchForUser(codeforces_username);
-
         if (nameCheck || leetcode_usernameCheck || codeforces_usernameCheck) {
             throw new CustomError('this username already exists');
         }
+
 
         // Check if user handles exists on leetcode and codeforces
         const LC_checkUserExists = await leetcode.checkUserExists(leetcode_username);
@@ -72,10 +78,12 @@ const addUser = async (name, leetcode_username, codeforces_username, discord_id)
             const lc = await platformController.addLeetcodeProblems(LC_username);
             user.leetcode_acSubmissions = lc;
         }
-        if (FC_username) {
-            const cf = await platformController.addCodeforcesProblems(FC_username);
-            user.codeforces_acSubmissions = cf;
-        }
+        // this part is commented out because codeforces api is not working as expected
+
+        // if (FC_username) {
+        //     const cf = await platformController.addCodeforcesProblems(FC_username);
+        //     user.codeforces_acSubmissions = cf;
+        // }
 
         await user.save();
         return user;
