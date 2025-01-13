@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
-
+const { CF_statusFormatter } = require('../../utils/codeforces-formatter')
 const apiKey = process.env.CODEFORCES_KEY
 const apiSecret = process.env.CODEFORCES_SECRET
 const { generateApiSignature } = require('../../utils/signature-generator')
@@ -85,7 +85,11 @@ const fetchUserStats = async (handle) => {
 
     try {
         const response = await axios.get(apiUrl);
-        return response.data;
+        if (response.data.status === 'FAILED') {
+            throw new Error('User not found');
+        }
+        const stats = CF_statusFormatter(response.data);
+        return stats;
 
     } catch (error) {
         throw new Error('Error fetching user stats');
