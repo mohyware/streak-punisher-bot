@@ -2,6 +2,7 @@ const UserController = require('../controllers/user-controller');
 const problemController = require('../controllers/problem-controller');
 const { formatUserData, formatProblems } = require('../utils/user-formatter');
 const User = require('../models/user-model');
+const Problem = require('../models/problem-model');
 
 const addUser = async (args, message) => {
     try {
@@ -37,12 +38,14 @@ const getUser = async (args, message) => {
         if (!user) {
             return message.reply(`❌ **No user found** with query: \`${searchQuery}\` 🔍`);
         }
-        const data = formatUserData(user);
+        const problemCount = await Problem.countDocuments({ user: user._id });
+
+        const data = formatUserData(user, problemCount);
 
         const stats = await problemController.getTodayStats(user.discordId);
         if (stats && stats.todaySolved && stats.todaySolved.length > 0) {
             const statsFormatted = formatProblems(stats);
-            const finalOutput = `${data}\n📊 ${statsFormatted}`;
+            const finalOutput = `${data}\n${statsFormatted}`;
             message.reply(finalOutput);
         } else {
             const finalOutput = `${data}\n\n❗ **No Solved Problems for this user today.**`;

@@ -23,6 +23,9 @@ const addProblem = async (args, message) => {
 };
 
 const getAllUserStatistics = async (args, message) => {
+    if (message.author.id !== process.env.OWNER_ID) {
+        return message.reply('❌ You do not have permission to execute this command.');
+    }
     try {
         const users = await User.find();
         const userStatsPromises = users.map(async (user) => {
@@ -56,12 +59,12 @@ const getAllUserStatistics = async (args, message) => {
             const statsFormatted = formatProblems(userStat.problems); // Assuming this formats today's solved problems
             const userMention = `<@${userStat.discordId}>`;
 
-            if (index === 0) {
+            if (index === 0 && userStat.streak > 0) {
                 // Special message for the top performer
                 topPerformer = `🥇 **Top Performer:** ${userMention} (${userStat.name})\n` +
                     `🎯 Streak: **${userStat.streak}**, 📅 Today Solved: **${userStat.todaySolved}**, 🌟 Total Solved: **${userStat.totalSolved}**\n` +
                     statsFormatted + '\n\n';
-            } else if (userStat.todaySolved === 0) {
+            } else if (userStat.streak === 0) {
                 // Special message for users who haven't solved anything
                 failedUsers += `⚠️ **${process.env.FAIL_MSG || 'No Solves Yet'}:** ${userMention} (${userStat.name})\n`
             } else {
