@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const connectToDatabase = require('./services/database/connection');
-const { addUser, getUser, updateUser, deleteUser, updateStreak, setStreak } = require('./commands/user-commands');
+const { addUser, getUser, updateUser, deleteUser, updateStreak, setStreak, helpMessage } = require('./commands/user-commands');
 const { addProblem, getAllUserStatistics, deleteProblem } = require('./commands/problem-commands');
 const mongoose = require('mongoose');
 const CustomError = require('./utils/custom-error');
@@ -21,6 +21,9 @@ client.on('messageCreate', async (message) => {
     const command = args.shift().toLowerCase();
 
     try {
+        if (command === 'help') {
+            await helpMessage(message);
+        }
         // user commands
         if (command === 'join') {
             await addUser(args, message);
@@ -50,23 +53,8 @@ client.on('messageCreate', async (message) => {
             await setStreak(args, message);
         }
     } catch (error) {
-        console.error(error);
-
         if (error instanceof CustomError) {
             return message.reply(error.message);
-        }
-        if (error.message === 'User already exists') {
-            return message.reply('❌ The user already exists with that name.');
-        }
-        else if (error.message === 'User not found') {
-            return message.reply('❌ The user was not found.');
-        }
-
-        else if (error.message === 'Problem already exists') {
-            return message.reply('❌ The problem already exists with that ID.');
-        }
-        else if (error.message === 'Problem not found') {
-            return message.reply('❌ The problem was not found.');
         }
 
         else if (error instanceof mongoose.Error) {

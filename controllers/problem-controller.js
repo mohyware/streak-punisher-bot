@@ -13,7 +13,7 @@ const searchForProblem = async (searchQuery, userId) => {
         }
 
         if (!problem) {
-            return null;
+            throw new CustomError('Problem not found');
         }
 
         return problem;

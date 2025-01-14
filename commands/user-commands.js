@@ -63,7 +63,7 @@ const updateUser = async (args, message) => {
 
         if (!name || !newLeetcodeUsername || !newCodeforcesUsername) {
             return message.reply(
-                '❗ **Usage:** `!updateuser <name> <new_leetcode_username> <new_codeforces_username>`'
+                '❗ **Usage:** `!rename <name> <new_leetcode_username> <new_codeforces_username>`'
             );
         }
 
@@ -155,11 +155,45 @@ const setStreak = async (args, message) => {
     }
 }
 
+const helpMessage = async (message) => {
+    try {
+        const helpMessage = `
+        **Help Menu**
+        
+        Welcome to the bot! Here are the available commands:
+        
+        **User Commands:**
+        
+        - \`!join <username> <leetcode_username (optional)> <codeforces_username (optional)>\` - To join.
+        - \`!getuser <name|codeforces_username|leetcode_username>\` - Retrieves the details of the specified user.
+        - \`rename <name> <new_leetcode_username> <new_codeforces_username>\` - Updates the username of an existing user.
+        - \`!escape <username>\` - Removes the specified user from the system.
+        
+        **Example:**
+        - \`!join mohy null mohyware\` - To only enter codeforces username.
+    
+        **Problem Commands:** 
+         For problems that are not in codeforces or leetcode, add them manually.  
+        - \`!addproblem <problemId> <title> <platform> <submissionId (optional)>\` - Adds a new problem to the system.
+        - \`!deleteproblem <problemID>\` - Deletes the specified problem from the system.   
+        
+        **Statistics Commands(Only Admin):**
+        - \`!dailystreak\` - Retrieves the daily streak statistics for all users.
+        - \`!updatestreak\` - Updates the daily streak of the all users.
+        - \`!setstreak <@username> <days>\` - Manually sets the daily streak for a user.
+        `;
+        return message.reply(helpMessage);
+    }
+    catch (error) {
+        throw error;
+    }
+}
 module.exports = {
     addUser,
     getUser,
     updateUser,
     deleteUser,
     updateStreak,
-    setStreak
+    setStreak,
+    helpMessage
 };
