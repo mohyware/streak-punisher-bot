@@ -60,8 +60,6 @@ const getTodayStats = async (discordId) => {
         }
         // check for leetcode and codeforces
         await updateUserProblems(discordId);
-        // update streak
-        await handleStreak(user);
         // return today problems
         const todaySolved = await Problem.find({ user: user._id, createdAt: { $gte: new Date().setHours(0, 0, 0, 0) } });
 
