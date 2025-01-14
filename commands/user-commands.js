@@ -1,6 +1,7 @@
 const UserController = require('../controllers/user-controller');
-const { formatUserData, formatProblems } = require('../utils/user-formatter');
 const problemController = require('../controllers/problem-controller');
+const { formatUserData, formatProblems } = require('../utils/user-formatter');
+const User = require('../models/user-model');
 
 const addUser = async (args, message) => {
     try {
@@ -99,9 +100,66 @@ const deleteUser = async (args, message) => {
     }
 };
 
+const updateStreak = async (args, message) => {
+    try {
+
+        if (message.author.id !== process.env.OWNER_ID) {
+            return message.reply('❌ You do not have permission to execute this command.');
+        }
+
+
+        const users = await User.find();
+
+        for (const user of users) {
+            const todayStats = await problemController.getTodayStats(user.discordId);
+
+            if (todayStats.todaySolved.length > 0) {
+                user.streak += 1;
+            } else {
+                user.streak = 0;
+            }
+
+            await user.save();
+        }
+
+        message.reply('✅ **Streaks updated successfully!**');
+    } catch (error) {
+        throw error;
+    }
+};
+
+const setStreak = async (args, message) => {
+    try {
+        if (message.author.id !== process.env.OWNER_ID) {
+            return message.reply('❌ You do not have permission to execute this command.');
+        }
+        const mention = args[0];
+        const streak = args[1];
+
+        const match = mention.match(/^<@(\d+)>$/);
+        if (match) {
+            discordId = match[1];
+        }
+
+        const user = await User.findOne({ discordId });
+
+        if (!streak) {
+            return message.reply('❗ **Usage:** `!setstreak <username> <streak>`');
+        }
+
+        user.streak = parseInt(streak);
+        await user.save();
+        message.reply(`✅ **Streak updated successfully!**`);
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     addUser,
     getUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    updateStreak,
+    setStreak
 };

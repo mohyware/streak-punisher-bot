@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const connectToDatabase = require('./services/database/connection');
-const { addUser, getUser, updateUser, deleteUser } = require('./commands/user-commands');
+const { addUser, getUser, updateUser, deleteUser, updateStreak, setStreak } = require('./commands/user-commands');
 const { addProblem, getAllUserStatistics, deleteProblem } = require('./commands/problem-commands');
 const mongoose = require('mongoose');
 const CustomError = require('./utils/custom-error');
@@ -21,6 +21,7 @@ client.on('messageCreate', async (message) => {
     const command = args.shift().toLowerCase();
 
     try {
+        // user commands
         if (command === 'join') {
             await addUser(args, message);
         } else if (command === 'getuser') {
@@ -31,14 +32,22 @@ client.on('messageCreate', async (message) => {
         else if (command === 'escape') {
             await deleteUser(args, message);
         }
+        // problem commands
         else if (command === 'addproblem') {
             await addProblem(args, message);
         }
+        else if (command === 'deleteproblem') {
+            await deleteProblem(args, message);
+        }
+        // statistics commands
         else if (command === 'dailystreak') {
             await getAllUserStatistics(args, message);
         }
-        else if (command === 'deleteproblem') {
-            await deleteProblem(args, message);
+        else if (command === 'updatestreak') {
+            await updateStreak(args, message);
+        }
+        else if (command === 'setstreak') {
+            await setStreak(args, message);
         }
     } catch (error) {
         console.error(error);
