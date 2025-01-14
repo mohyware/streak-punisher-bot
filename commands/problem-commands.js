@@ -91,11 +91,7 @@ const getAllUserStatistics = async (args, message) => {
 
 async function sendTopPerformer(topPerformer, message) {
     if (topPerformer) {
-        const sigma = new AttachmentBuilder('./assets/sigma.mp4', 'sigma.mp4');
-        await message.reply({
-            content: topPerformer.trim(),
-            files: [sigma],
-        });
+        message.reply(topPerformer.trim());
     }
 }
 
