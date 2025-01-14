@@ -21,6 +21,10 @@ client.on('messageCreate', async (message) => {
     const command = args.shift().toLowerCase();
 
     try {
+        // Check if the message is in the allowed channel
+        if (message.channel.id !== process.env.ALLOWED_CHANNEL_ID) {
+            return;
+        }
         if (command === 'help') {
             await helpMessage(message);
         }
