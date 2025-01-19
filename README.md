@@ -77,6 +77,13 @@ Ensure you have the following:
     LEETCODE_COOKIE=csrftoken=your-leetcode-cookie
     OWNER_ID=your-discord-id
     ```
+4. Use one of the following commands to start the bot:
+    ```bash
+    npm run dev
+    ```
+    ```bash
+    npm run start
+    ```
 ---
 
 ### Usage
