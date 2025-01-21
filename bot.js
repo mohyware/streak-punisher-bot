@@ -21,9 +21,14 @@ client.on('messageCreate', async (message) => {
     const command = args.shift().toLowerCase();
 
     try {
-        // Check if the message is in the allowed channel
-        if (message.channel.id !== process.env.ALLOWED_CHANNEL_ID) {
-            return;
+        const allowedChannelIds = [
+            process.env.ALLOWED_CHANNEL_ID_1,
+            process.env.ALLOWED_CHANNEL_ID_2,
+            process.env.ALLOWED_CHANNEL_ID_3,
+        ];
+
+        if (!allowedChannelIds.includes(message.channel.id)) {
+            return; // Exit if the channel is not allowed
         }
         if (command === 'help') {
             await helpMessage(message);
@@ -73,3 +78,17 @@ client.on('messageCreate', async (message) => {
 
 // Login to Discord
 client.login(process.env.BOT_TOKEN);
+
+
+// For health check from Koyeb deployment
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Bot is running!");
+});
+
+const PORT = process.env.PORT || 8000;
+server.listen(PORT, () => {
+    console.log(`Health check server running on port ${PORT}`);
+});
