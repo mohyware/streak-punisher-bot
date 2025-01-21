@@ -6,8 +6,9 @@ Streak Punisher is a Discord bot designed to help users maintain their problem-s
 - **Automated Problem Fetching:** The bot automatically fetches problems from LeetCode and Codeforces.
 - **Manual Problem Addition:** For platforms not directly supported, Streak Punisher allows you to manually add problems, ensuring you can keep your streak alive no matter where you practice.
 - **Progress Tracking:** With MongoDB for data persistence, Streak Punisher keeps a detailed record of your solved problems, streaks, and overall progress, helping you visualize your growth over time.
-
-### User Commands:
+---
+### Bot Commands
+#### User Commands:
 
 - `!join <username> <leetcode_username (optional)> <codeforces_username (optional)>`  
   Adds a new user to the system.
@@ -21,11 +22,11 @@ Streak Punisher is a Discord bot designed to help users maintain their problem-s
 - `!escape <username>`  
   Removes the specified user from the system.
 
-**Example:**  
-`!join mohy null mohyware`  
-Adds a user with only a Codeforces username.
+  **Example:**  
+  `!join mohy null mohyware`  
+  Adds a user with only a Codeforces username.
 
-### Problem Commands:
+#### Problem Commands:
 
 - `!addproblem <problemId> <title> <platform> <submissionId (optional)>`  
   For problems that are not on Codeforces or LeetCode, add them manually.
@@ -33,7 +34,7 @@ Adds a user with only a Codeforces username.
 - `!deleteproblem <problemID>`  
   Deletes the specified problem from the system.
 
-### Statistics Commands (Admin Only):
+#### Statistics Commands (Admin Only):
 
 - `!dailystreak`  
   Retrieves the daily streak statistics for all users.
@@ -68,14 +69,20 @@ Ensure you have the following:
     ```
 3. Rename .env.example to .env and add your configurations:
     ```bash
-    DISCORD_TOKEN=your-bot-token
+    # DB
     MONGO_URI=mongodb+srv://name:password@cluster0.mongodb.net/databasename
-    PORT=3000
-    SERVER_ID=your-server-id
+    # Server Port (8000 Koyeb deployment health check)
+    PORT=8000
+    # Platforms
     CODEFORCES_KEY=your-codeforces-key
     CODEFORCES_SECRET=your-codeforces-secret
-    LEETCODE_COOKIE=csrftoken=your-leetcode-cookie
-    OWNER_ID=your-discord-id
+    LEETCODE_COOKIE='csrftoken=your-leetcode-cookie'
+    # Discord
+    DISCORD_TOKEN=your-bot-token
+    OWNER_ID=your-discord-id # for admin commands
+    ALLOWED_CHANNEL_ID_1=
+    ALLOWED_CHANNEL_ID_2=
+    ALLOWED_CHANNEL_ID_3=
     ```
 4. Use one of the following commands to start the bot:
     ```bash
