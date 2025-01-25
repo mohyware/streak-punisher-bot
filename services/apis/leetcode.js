@@ -114,11 +114,22 @@ async function fetchProblemDetails(titleSlug) {
 
 
 async function fetchTodaySolvedProblems(username) {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0); // Start of the day in local time
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999); // End of the day in local time
 
+    const timeZone = "Africa/Cairo";
+
+    // Get current date in Cairo
+    const now = new Date().toLocaleString("en-US", { timeZone });
+
+    // Parse the Cairo date into a new Date object
+    const cairoDate = new Date(now);
+
+    // Start of the day in Cairo
+    const todayStart = new Date(cairoDate);
+    todayStart.setHours(0, 0, 0, 0);
+
+    // End of the day in Cairo
+    const todayEnd = new Date(cairoDate);
+    todayEnd.setHours(23, 59, 59, 999);
     const todayStartTimestamp = Math.floor(todayStart.getTime() / 1000); // Convert to Unix time
     const todayEndTimestamp = Math.floor(todayEnd.getTime() / 1000);
 
