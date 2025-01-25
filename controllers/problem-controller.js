@@ -137,10 +137,30 @@ const deleteProblem = async (searchQuery, discordId) => {
     return deletedProblem;
 };
 
+const setOtherProblemsCount = async (count, discordId) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            { discordId },
+            { other_acSubmissions: count },
+            { new: true }
+        );
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+        await user.save();
+
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
+
 module.exports = {
     getProblem,
     addProblem,
     deleteProblem,
     updateUserProblems,
     getTodayStats,
+    setOtherProblemsCount
 };

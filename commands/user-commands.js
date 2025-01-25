@@ -38,7 +38,7 @@ const getUser = async (args, message) => {
         if (!user) {
             return message.reply(`❌ **No user found** with query: \`${searchQuery}\` 🔍`);
         }
-        const problemCount = await Problem.countDocuments({ user: user._id });
+        const problemCount = await Problem.countDocuments({ user: user._id }) + user.other_acSubmissions;
 
         const data = formatUserData(user, problemCount);
 

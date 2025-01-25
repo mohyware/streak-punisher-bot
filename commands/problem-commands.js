@@ -29,7 +29,7 @@ const getAllUserStatistics = async (args, message) => {
     try {
         const users = await User.find();
         const userStatsPromises = users.map(async (user) => {
-            const problemCount = await Problem.countDocuments({ user: user._id });
+            const problemCount = await Problem.countDocuments({ user: user._id }) + user.other_acSubmissions;
             const todayStats = await ProblemController.getTodayStats(user.discordId);
             return {
                 discordId: user.discordId,
@@ -91,9 +91,28 @@ const getAllUserStatistics = async (args, message) => {
 
 async function sendTopPerformer(topPerformer, message) {
     if (topPerformer) {
-        message.reply(topPerformer.trim());
+        const sigma = new AttachmentBuilder('./assets/sigma.mp4', 'sigma.mp4');
+        await message.reply({
+            content: topPerformer.trim(),
+            files: [sigma],
+        });
     }
 }
+
+const setOtherProblemsCount = async (args, message) => {
+    try {
+        const [count] = args;
+        const discordId = message.author.id;
+        if (!count || isNaN(count)) {
+            return message.reply('❗ **Usage:** `!setotherproblems <count>`\n' +
+                '💡 **Example:** `!setotherproblems 123`');
+        }
+        await ProblemController.setOtherProblemsCount(count, discordId);
+        message.reply(`✅ **Other problems count set successfully!** 🎉`);
+    } catch (error) {
+        throw error;
+    }
+};
 
 const deleteProblem = async (args, message) => {
     try {
@@ -116,4 +135,5 @@ module.exports = {
     addProblem,
     deleteProblem,
     getAllUserStatistics,
+    setOtherProblemsCount
 };
