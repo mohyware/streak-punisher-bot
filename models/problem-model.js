@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const problemSchema = new mongoose.Schema({
-    problemId: { type: String, required: true },
+    problemId: { type: String, required: true, unique: false },
     title: { type: String, required: true },
     platform: { type: String, required: true },
     submissionId: { type: String, unique: true },
