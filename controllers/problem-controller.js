@@ -99,7 +99,7 @@ const updateUserProblems = async (discordId) => {
         }));
 
         try {
-            await Problem.insertMany(submissions, { ordered: true });
+            await Problem.insertMany(submissions, { ordered: false });
         } catch (error) {
             if (error.code === 11000 || error.message.includes('duplicate')) {
                 return null; // Return false for duplicates (no new problems)
