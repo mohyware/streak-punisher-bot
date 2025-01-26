@@ -51,12 +51,24 @@ const fetchRecentSubmissions = async (handle) => {
         const response = await axios.get(apiUrl);
         const submissions = response.data.result;
 
+
+        const timeZone = "Africa/Cairo";
+
+        // Get current date in Cairo
+        const now = new Date().toLocaleString("en-US", { timeZone });
+
+        // Parse the Cairo date into a new Date object
+        const cairoDate = new Date(now);
+
         // Get the start and end timestamps for today
-        const startOfToday = new Date();
+        const startOfToday = new Date(cairoDate);
         startOfToday.setHours(0, 0, 0, 0);
         const startTimestamp = Math.floor(startOfToday.getTime() / 1000);
 
-        const endTimestamp = Math.floor(Date.now() / 1000);
+        const endOfToday = new Date(cairoDate);
+        endOfToday.setHours(23, 59, 59, 999);
+
+        const endTimestamp = Math.floor(endOfToday.getTime() / 1000);
 
         // Filter submissions for accepted problems solved today
         const solvedToday = submissions.filter((submission) => {
@@ -69,6 +81,7 @@ const fetchRecentSubmissions = async (handle) => {
 
         return solvedToday;
     } catch (error) {
+        console.log(error);
         throw new Error('Error fetching user submissions');
     }
 };
