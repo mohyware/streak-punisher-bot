@@ -2,7 +2,6 @@ const ProblemController = require('../controllers/problem-controller');
 const User = require('../models/user-model');
 const Problem = require('../models/problem-model');
 const { formatProblems } = require('../utils/user-formatter');
-const { AttachmentBuilder } = require('discord.js');
 
 const addProblem = async (args, message) => {
     try {
@@ -76,7 +75,7 @@ const getAllUserStatistics = async (args, message) => {
         });
 
         if (topPerformer) {
-            await sendTopPerformer(topPerformer, message);
+            message.reply(topPerformer.trim());
         }
         if (mainStatsMessage) {
             message.reply(mainStatsMessage.trim());
@@ -88,16 +87,6 @@ const getAllUserStatistics = async (args, message) => {
         message.reply('❌ An error occurred while fetching statistics. Please try again later.');
     }
 };
-
-async function sendTopPerformer(topPerformer, message) {
-    if (topPerformer) {
-        const sigma = new AttachmentBuilder('./assets/sigma.mp4', 'sigma.mp4');
-        await message.reply({
-            content: topPerformer.trim(),
-            files: [sigma],
-        });
-    }
-}
 
 const setOtherProblemsCount = async (args, message) => {
     try {
