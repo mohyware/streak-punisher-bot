@@ -12,10 +12,6 @@ const searchForProblem = async (searchQuery, userId) => {
             problem = await Problem.findOne({ submissionId: searchQuery });
         }
 
-        if (!problem) {
-            throw new CustomError('Problem not found');
-        }
-
         return problem;
     } catch (error) {
         throw error;
@@ -24,6 +20,9 @@ const searchForProblem = async (searchQuery, userId) => {
 
 const getProblem = async (searchQuery) => {
     const problem = await searchForProblem(searchQuery);
+    if (!problem) {
+        throw new CustomError('Problem not found');
+    }
     return problem;
 };
 
@@ -60,8 +59,16 @@ const getTodayStats = async (discordId) => {
         }
         // check for leetcode and codeforces
         await updateUserProblems(discordId);
+
+        // Get current date in Cairo
+        const timeZone = "Africa/Cairo";
+        const now = new Date().toLocaleString("en-US", { timeZone });
+        const cairoDate = new Date(now);
+        const todayStart = new Date(cairoDate);
+        todayStart.setHours(0, 0, 0, 0);
+
         // return today problems
-        const todaySolved = await Problem.find({ user: user._id, createdAt: { $gte: new Date().setHours(0, 0, 0, 0) } });
+        const todaySolved = await Problem.find({ user: user._id, createdAt: { $gte: todayStart } });
 
         return {
             todaySolved,
