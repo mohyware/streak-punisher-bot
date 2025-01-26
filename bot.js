@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const connectToDatabase = require('./services/database/connection');
 const { addUser, getUser, updateUser, deleteUser, updateStreak, setStreak, helpMessage } = require('./commands/user-commands');
-const { addProblem, getAllUserStatistics, setOtherProblemsCount, deleteProblem } = require('./commands/problem-commands');
+const { addProblem, addProblems, getAllUserStatistics, setOtherProblemsCount, deleteProblem } = require('./commands/problem-commands');
 const mongoose = require('mongoose');
 const CustomError = require('./utils/custom-error');
 
@@ -47,6 +47,9 @@ client.on('messageCreate', async (message) => {
         // problem commands
         else if (command === 'addproblem') {
             await addProblem(args, message);
+        }
+        else if (command === 'addproblems') {
+            await addProblems(args, message);
         }
         else if (command === 'deleteproblem') {
             await deleteProblem(args, message);

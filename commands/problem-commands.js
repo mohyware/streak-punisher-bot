@@ -21,6 +21,61 @@ const addProblem = async (args, message) => {
     }
 };
 
+const generateLargeRandomNumber = () => {
+    const min = 10n ** 17n;
+    const max = (10n ** 18n) - 1n;
+
+    const randomNumber = min + BigInt(Math.floor(Math.random() * Number(max - min + 1n)));
+    return randomNumber.toString();
+};
+
+const addProblems = async (input, message) => {
+    try {
+        const discordId = message.author.id;
+
+        // Extract the platform and problems
+        const [platformWithProblems] = input;
+        const [platform, ...problems] = platformWithProblems.split("\n");
+
+        if (!platform || problems.length === 0) {
+            return message.reply(
+                '❗ **Invalid input format.** Ensure the format is `platform\\nproblem1\\nproblem2...`\n' +
+                '💡 **Example:** `vjudge\\n2062-A\\n2063-A\\n2065-A`'
+            );
+        }
+
+        for (const problemId of problems) {
+            if (!problemId.trim()) continue;
+
+            console.log(`Adding problem ${platform.trim()} ${problemId.trim()} for ${discordId}`);
+
+            try {
+                await ProblemController.addProblem(
+                    problemId.trim(),
+                    problemId.trim(),
+                    platform.trim(),
+                    generateLargeRandomNumber(),
+                    discordId
+                );
+
+                // Notify user about successful addition
+                message.reply(`✅ **Problem ${platform} ${problemId.trim()} added successfully!** 🎉`);
+            } catch (error) {
+                if (error.code === 11000 || error.message.includes('duplicate') || error.message.includes('Problem already exists')) {
+                    message.reply(`⚠️ **Problem ${platform} ${problemId.trim()} already exists.** Skipping.`);
+                } else {
+                    message.reply(`❗ **Failed to add problem ${platform} ${problemId.trim()} due to an error.**`);
+                }
+                console.error(`Error adding problem ${problemId.trim()}:`, error);
+            }
+
+        }
+    } catch (error) {
+        console.error("Error adding problems:", error);
+        message.reply(`❗ **An error occurred while adding problems.** Please try again later.`);
+    }
+};
+
 const getAllUserStatistics = async (args, message) => {
     if (message.author.id !== process.env.OWNER_ID) {
         return message.reply('❌ You do not have permission to execute this command.');
@@ -122,6 +177,7 @@ const deleteProblem = async (args, message) => {
 
 module.exports = {
     addProblem,
+    addProblems,
     deleteProblem,
     getAllUserStatistics,
     setOtherProblemsCount
