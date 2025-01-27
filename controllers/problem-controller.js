@@ -1,8 +1,8 @@
 const Problem = require('../models/problem-model');
 const User = require('../models/user-model');
 const CustomError = require('../utils/custom-error');
-const handleStreak = require('../utils/handle-streak');
 const platformController = require('../controllers/platform-controller')
+const moment = require('moment-timezone');
 
 const searchForProblem = async (searchQuery, userId) => {
     try {
@@ -61,11 +61,8 @@ const getTodayStats = async (discordId) => {
         await updateUserProblems(discordId);
 
         // Get current date in Cairo
-        const timeZone = "Africa/Cairo";
-        const now = new Date().toLocaleString("en-US", { timeZone });
-        const cairoDate = new Date(now);
-        const todayStart = new Date(cairoDate);
-        todayStart.setHours(0, 0, 0, 0);
+        const cairoDate = moment.tz("Africa/Cairo");
+        const todayStart = cairoDate.startOf('day').toDate();
 
         // return today problems
         const todaySolved = await Problem.find({ user: user._id, createdAt: { $gte: todayStart } });
