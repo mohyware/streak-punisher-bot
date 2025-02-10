@@ -5,6 +5,7 @@ const { addUser, getUser, updateUser, deleteUser, updateStreak, setStreak, helpM
 const { addProblem, addProblems, getAllUserStatistics, setOtherProblemsCount, deleteProblem } = require('./commands/problem-commands');
 const mongoose = require('mongoose');
 const CustomError = require('./utils/custom-error');
+const cron = require('node-cron');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
@@ -12,6 +13,25 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
     await connectToDatabase();
+
+    // Schedule dailystreak to run every day at 11:50 PM
+    cron.schedule('45 22 * * *', async () => {
+        const channel = client.channels.cache.get("1338596870087249960");
+        if (channel) {
+            // Create a mock `message` object
+            const fakeMessage = {
+                author: { id: process.env.OWNER_ID },
+                reply: async (text) => await channel.send(text),
+            };
+            try {
+                await getAllUserStatistics({}, fakeMessage);
+            } catch (error) {
+                channel.send("حاجة احا خالص حصلت بوظته هبقي اصلحها لما اصحي");
+            }
+        }
+    }, {
+        timezone: 'Africa/Cairo'
+    });
 });
 
 // Command handler
