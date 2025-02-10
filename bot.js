@@ -15,8 +15,8 @@ client.once('ready', async () => {
     await connectToDatabase();
 
     // Schedule dailystreak to run every day at 11:50 PM
-    cron.schedule('45 22 * * *', async () => {
-        const channel = client.channels.cache.get("1338596870087249960");
+    cron.schedule('50 23 * * *', async () => {
+        const channel = client.channels.cache.get(process.env.ALLOWED_CHANNEL_ID_1);
         if (channel) {
             // Create a mock `message` object
             const fakeMessage = {
@@ -24,6 +24,7 @@ client.once('ready', async () => {
                 reply: async (text) => await channel.send(text),
             };
             try {
+                await updateStreak({}, fakeMessage);
                 await getAllUserStatistics({}, fakeMessage);
             } catch (error) {
                 channel.send("حاجة احا خالص حصلت بوظته هبقي اصلحها لما اصحي");
