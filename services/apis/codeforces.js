@@ -4,6 +4,7 @@ const { CF_statusFormatter } = require('../../utils/codeforces-formatter')
 const apiKey = process.env.CODEFORCES_KEY
 const apiSecret = process.env.CODEFORCES_SECRET
 const { generateApiSignature } = require('../../utils/signature-generator')
+const moment = require('moment-timezone');
 
 const checkUserExists = async (handle) => {
     const methodName = 'user.info';
@@ -51,24 +52,15 @@ const fetchRecentSubmissions = async (handle) => {
         const response = await axios.get(apiUrl);
         const submissions = response.data.result;
 
-
-        const timeZone = "Africa/Cairo";
-
         // Get current date in Cairo
-        const now = new Date().toLocaleString("en-US", { timeZone });
-
-        // Parse the Cairo date into a new Date object
-        const cairoDate = new Date(now);
+        const timeZone = "Africa/Cairo";
+        const cairoDate = moment.tz(timeZone);
+        const todayStart = cairoDate.startOf('day').toDate();
+        const todayEnd = cairoDate.endOf('day').toDate();
 
         // Get the start and end timestamps for today
-        const startOfToday = new Date(cairoDate);
-        startOfToday.setHours(0, 0, 0, 0);
-        const startTimestamp = Math.floor(startOfToday.getTime() / 1000);
-
-        const endOfToday = new Date(cairoDate);
-        endOfToday.setHours(23, 59, 59, 999);
-
-        const endTimestamp = Math.floor(endOfToday.getTime() / 1000);
+        const startTimestamp = Math.floor(todayStart.getTime() / 1000);
+        const endTimestamp = Math.floor(todayEnd.getTime() / 1000);
 
         // Filter submissions for accepted problems solved today
         const solvedToday = submissions.filter((submission) => {
