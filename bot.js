@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const connectToDatabase = require('./services/database/connection');
 const { addUser, getUser, updateUser, deleteUser, updateStreak, setStreak, helpMessage } = require('./commands/user-commands');
-const { addProblem, addProblems, getAllUserStatistics, setOtherProblemsCount, deleteProblem } = require('./commands/problem-commands');
+const { addProblem, addProblems, getAllUserStatistics, reminder, setOtherProblemsCount, deleteProblem } = require('./commands/problem-commands');
 const mongoose = require('mongoose');
 const CustomError = require('./utils/custom-error');
 const cron = require('node-cron');
@@ -13,6 +13,25 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
     await connectToDatabase();
+
+    // Schedule reminder to run every day at 10:00 PM
+    cron.schedule('00 22 * * *', async () => {
+        const channel = client.channels.cache.get(process.env.ALLOWED_CHANNEL_ID_1);
+        if (channel) {
+            // Create a mock `message` object
+            const fakeMessage = {
+                author: { id: process.env.OWNER_ID },
+                reply: async (text) => await channel.send(text),
+            };
+            try {
+                await reminder({}, fakeMessage);
+            } catch (error) {
+                channel.send("حاجة حصلت بوظته هبقي اصلحها لما اصحي");
+            }
+        }
+    }, {
+        timezone: 'Africa/Cairo'
+    });
 
     // Schedule dailystreak to run every day at 11:50 PM
     cron.schedule('50 23 * * *', async () => {
@@ -27,7 +46,7 @@ client.once('ready', async () => {
                 await updateStreak({}, fakeMessage);
                 await getAllUserStatistics({}, fakeMessage);
             } catch (error) {
-                channel.send("حاجة احا خالص حصلت بوظته هبقي اصلحها لما اصحي");
+                channel.send("حاجة حصلت بوظته هبقي اصلحها لما اصحي");
             }
         }
     }, {
@@ -81,6 +100,9 @@ client.on('messageCreate', async (message) => {
         // statistics commands
         else if (command === 'dailystreak') {
             await getAllUserStatistics(args, message);
+        }
+        else if (command === 'reminder') {
+            await reminder(args, message);
         }
         else if (command === 'updatestreak') {
             await updateStreak(args, message);

@@ -143,6 +143,44 @@ const getAllUserStatistics = async (args, message) => {
     }
 };
 
+const reminder = async (args, message) => {
+    if (message.author.id !== process.env.OWNER_ID) {
+        return message.reply('❌ You do not have permission to execute this command.');
+    }
+    try {
+        const users = await User.find();
+        const userStatsPromises = users.map(async (user) => {
+            await ProblemController.updateUserProblems(user.discordId);
+            const problemCount = await Problem.countDocuments({ user: user._id }) + user.other_acSubmissions;
+            const todayStats = await ProblemController.getTodayStats(user.discordId);
+            return {
+                discordId: user.discordId,
+                name: user.name,
+                todaySolved: todayStats.todaySolved.length,
+                totalSolved: problemCount,
+                streak: user.streak,
+                problems: todayStats,
+            };
+        });
+
+        let allUserStats = await Promise.all(userStatsPromises);
+
+        // Filter users who haven't solved anything today
+        let failedUsers = allUserStats
+            .filter(userStat => userStat.todaySolved === 0)
+            .map(userStat => `💀 **${'حل قبل ما الضعف يحل'}:** <@${userStat.discordId}> (${userStat.name})`)
+            .join('\n');
+
+        if (failedUsers) {
+            message.reply(failedUsers.trim());
+        } else {
+            message.reply('✅ Everyone solved at least one problem today!');
+        }
+    } catch (error) {
+        message.reply('❌ An error occurred while fetching statistics. Please try again later.');
+    }
+};
+
 const setOtherProblemsCount = async (args, message) => {
     try {
         const [count] = args;
@@ -180,5 +218,6 @@ module.exports = {
     addProblems,
     deleteProblem,
     getAllUserStatistics,
-    setOtherProblemsCount
+    setOtherProblemsCount,
+    reminder
 };
