@@ -41,7 +41,8 @@ const getUser = async (args, message) => {
         const problemCount = await Problem.countDocuments({ user: user._id }) + user.other_acSubmissions;
 
         const data = formatUserData(user, problemCount);
-
+        // update user problems
+        await problemController.updateUserProblems(user.discordId);
         const stats = await problemController.getTodayStats(user.discordId);
         if (stats && stats.todaySolved && stats.todaySolved.length > 0) {
             const statsFormatted = formatProblems(stats);
@@ -114,6 +115,8 @@ const updateStreak = async (args, message) => {
         const users = await User.find();
 
         for (const user of users) {
+            // update user problems
+            await problemController.updateUserProblems(user.discordId);
             const todayStats = await problemController.getTodayStats(user.discordId);
 
             if (todayStats.todaySolved.length > 0) {

@@ -57,8 +57,6 @@ const getTodayStats = async (discordId) => {
         if (!user) {
             throw new Error('User not found');
         }
-        // check for leetcode and codeforces
-        await updateUserProblems(discordId);
 
         // Get current date in Cairo
         const cairoDate = moment.tz("Africa/Cairo");
