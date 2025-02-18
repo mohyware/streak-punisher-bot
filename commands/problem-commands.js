@@ -115,7 +115,7 @@ const getAllUserStatistics = async (args, message) => {
 
             if (index === 0 && userStat.streak > 0) {
                 // Special message for the top performer
-                topPerformer = `🥇 **Top Performer:** ${userMention} (${userStat.name})\n` +
+                topPerformer = `🥇 **${process.env.TOP_MSG || 'Top Performer:'}:** ${userMention} (${userStat.name})\n` +
                     `🎯 Streak: **${userStat.streak}**, 📅 Today Solved: **${userStat.todaySolved}**, 🌟 Total Solved: **${userStat.totalSolved}**\n` +
                     statsFormatted + '\n\n';
             } else if (userStat.streak === 0) {
