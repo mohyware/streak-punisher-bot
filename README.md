@@ -1,11 +1,13 @@
 ## Streak Punisher Bot
 ### Overview
-Streak Punisher is a Discord bot designed to help users maintain their problem-solving streaks. It automatically fetches problems from LeetCode and Codeforces, while also offering the option to manually add problems from other platforms.
+Streak Punisher is a Discord bot designed to help users maintain their problem-solving streaks. Each day It automatically fetches challenges from LeetCode and Codeforces, insult those who abandon their streak, ranks users based on streak, solved problems, then greet the top performer.
 
 ### Features
-- **Automated Problem Fetching:** The bot automatically fetches problems from LeetCode and Codeforces.
-- **Manual Problem Addition:** For platforms not directly supported, Streak Punisher allows you to manually add problems, ensuring you can keep your streak alive no matter where you practice.
-- **Progress Tracking:** With MongoDB for data persistence, Streak Punisher keeps a detailed record of your solved problems, streaks, and overall progress, helping you visualize your growth over time.
+- 🤖 **Automated Problem Fetching:** The bot automatically fetches problems from LeetCode and Codeforces.
+- ✍️ **Manual Problem Addition:** For platforms not directly supported, Streak Punisher allows you to manually add problems.
+- 📈 **Progress Tracking:** With MongoDB for data persistence, Streak Punisher keeps a detailed record of your solved problems, streaks, and overall progress, helping you visualize your growth over time.
+- ⏰ **Daily Reminders:** Sends a message two hours before deadline to remind users who haven't solved a problem yet.
+
 ---
 ### Bot Commands
 #### User Commands:
