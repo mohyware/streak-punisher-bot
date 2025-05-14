@@ -85,6 +85,9 @@ Ensure you have the following:
     ALLOWED_CHANNEL_ID_1=
     ALLOWED_CHANNEL_ID_2=
     ALLOWED_CHANNEL_ID_3=
+    # Customize msgs
+    FAIL_MSG=
+    TOP_MSG=
     ```
 4. Use one of the following commands to start the bot:
     ```bash
