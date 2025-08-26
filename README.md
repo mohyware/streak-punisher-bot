@@ -51,6 +51,8 @@ Ensure you have the following:
     # Customize msgs
     FAIL_MSG=
     TOP_MSG=
+    # TimeZone
+    TIMEZONE=        # example "Africa/Cairo"
     ```
 4. Use one of the following commands to start the bot:
     ```bash
@@ -102,20 +104,18 @@ Ensure you have the following:
 - `!deleteproblem <problemID>`  
   Deletes the specified problem from the system.
 
+- `!setcount <count>`  
+  set count for problems solved before joining the bot.
 #### Statistics Commands **(Admin Only)**:
 
 - `!dailystreak`  
-  Retrieves the daily streak statistics for all users. **this ran automatically 12 PM  (Cairo time)**.
+  Retrieves the daily streak statistics for all users. **this ran automatically 12 PM  (local time zone)**.
 
 - `!updatestreak`  
-  Updates the daily streak for all users. **this ran automatically 12 PM  (Cairo time)**.
+  Updates the daily streak for all users. **this ran automatically 12 PM  (local time zone)**.
 
 - `!reminder`  
-  remind users two hours before the deadline. **this ran automatically 10 PM  (Cairo time)**.
+  remind users two hours before the deadline. **this ran automatically 10 PM  (local time zone)**.
 
 - `!setstreak <@username> <days>`  
   Manually sets the daily streak for a specific user.
-
----
-### Contributing
-Feel free to fork the repository and submit pull requests.
