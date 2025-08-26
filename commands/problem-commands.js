@@ -105,7 +105,7 @@ const getAllUserStatistics = async (args, message) => {
         });
 
         // Prepare the message
-        let mainStatsMessage = "";
+        let mainStatsMessage = [];
         let failedUsers = "";
         let topPerformer = "";
 
@@ -120,12 +120,12 @@ const getAllUserStatistics = async (args, message) => {
                     statsFormatted + '\n\n';
             } else if (userStat.streak === 0) {
                 // Special message for users who haven't solved anything
-                failedUsers += `⚠️ **${process.env.FAIL_MSG || 'No Solves Yet'}:** ${userMention} (${userStat.name})\n`
+                failedUsers += `⚠️ **${process.env.FAIL_MSG || 'No Solves Yet'}:** ${userMention} (${userStat.name})\n`;
             } else {
                 // Normal message for others
-                mainStatsMessage += `**${index + 1}.** ${userMention} (${userStat.name})\n` +
+                mainStatsMessage.push(`**${index + 1}.** ${userMention} (${userStat.name})\n` +
                     `🎯 Streak: **${userStat.streak}**, 📅 Today Solved: **${userStat.todaySolved}**, 🌟 Total Solved: **${userStat.totalSolved}**\n` +
-                    statsFormatted + '\n\n';
+                    statsFormatted + '\n\n');
             }
         });
 
@@ -133,7 +133,9 @@ const getAllUserStatistics = async (args, message) => {
             message.reply(topPerformer.trim());
         }
         if (mainStatsMessage) {
-            message.reply(mainStatsMessage.trim());
+            for (let i = 0; i < mainStatsMessage.length; i++) {
+                message.reply(mainStatsMessage[i].trim());
+            }
         }
         if (failedUsers) {
             message.reply(failedUsers.trim());
@@ -186,8 +188,8 @@ const setOtherProblemsCount = async (args, message) => {
         const [count] = args;
         const discordId = message.author.id;
         if (!count || isNaN(count)) {
-            return message.reply('❗ **Usage:** `!setotherproblems <count>`\n' +
-                '💡 **Example:** `!setotherproblems 123`');
+            return message.reply('❗ **Usage:** `!setcount <count>`\n' +
+                '💡 **Example:** `!setcount 123`');
         }
         await ProblemController.setOtherProblemsCount(count, discordId);
         message.reply(`✅ **Other problems count set successfully!** 🎉`);

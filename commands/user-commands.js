@@ -89,7 +89,7 @@ const deleteUser = async (args, message) => {
 
         if (!searchQuery) {
             return message.reply(
-                '❗ **Usage:** `!deleteuser <name|codeforces_username|leetcode_username>`'
+                '❗ **Usage:** `!escape <name|codeforces_username|leetcode_username>`'
             );
         }
 

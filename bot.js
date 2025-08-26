@@ -14,24 +14,25 @@ client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}`);
     await connectToDatabase();
 
+    // TODO: something is wrong with this cron job i will fix it later
     // Schedule reminder to run every day at 10:00 PM
-    cron.schedule('00 22 * * *', async () => {
-        const channel = client.channels.cache.get(process.env.ALLOWED_CHANNEL_ID_1);
-        if (channel) {
-            // Create a mock `message` object
-            const fakeMessage = {
-                author: { id: process.env.OWNER_ID },
-                reply: async (text) => await channel.send(text),
-            };
-            try {
-                await reminder({}, fakeMessage);
-            } catch (error) {
-                channel.send("حاجة حصلت بوظته هبقي اصلحها لما اصحي");
-            }
-        }
-    }, {
-        timezone: 'Africa/Cairo'
-    });
+    // cron.schedule('00 22 * * *', async () => {
+    //     const channel = client.channels.cache.get(process.env.ALLOWED_CHANNEL_ID_1);
+    //     if (channel) {
+    //         // Create a mock `message` object
+    //         const fakeMessage = {
+    //             author: { id: process.env.OWNER_ID },
+    //             reply: async (text) => await channel.send(text),
+    //         };
+    //         try {
+    //             await reminder({}, fakeMessage);
+    //         } catch (error) {
+    //             channel.send("something went wrong");
+    //         }
+    //     }
+    // }, {
+    //     timezone: process.env.TIMEZONE
+    // });
 
     // Schedule dailystreak to run every day at 11:50 PM
     cron.schedule('50 23 * * *', async () => {
@@ -46,11 +47,11 @@ client.once('ready', async () => {
                 await updateStreak({}, fakeMessage);
                 await getAllUserStatistics({}, fakeMessage);
             } catch (error) {
-                channel.send("حاجة حصلت بوظته هبقي اصلحها لما اصحي");
+                channel.send("something went wrong");
             }
         }
     }, {
-        timezone: 'Africa/Cairo'
+        timezone: process.env.TIMEZONE
     });
 });
 
@@ -130,14 +131,15 @@ client.login(process.env.BOT_TOKEN);
 
 
 // For health check from Koyeb deployment
-const http = require("http");
+// TODO: uncomment this when the bot is deployed on koyeb
+// const http = require("http");
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Bot is running!");
-});
+// const server = http.createServer((req, res) => {
+//     res.writeHead(200, { "Content-Type": "text/plain" });
+//     res.end("Bot is running!");
+// });
 
-const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => {
-    console.log(`Health check server running on port ${PORT}`);
-});
+// const PORT = process.env.PORT || 8000;
+// server.listen(PORT, () => {
+//     console.log(`Health check server running on port ${PORT}`);
+// });

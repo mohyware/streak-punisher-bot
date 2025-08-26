@@ -116,11 +116,11 @@ async function fetchProblemDetails(titleSlug) {
 
 async function fetchTodaySolvedProblems(username) {
 
-    // Get current date in Cairo
-    const timeZone = "Africa/Cairo";
-    const cairoDate = moment.tz(timeZone);
-    const todayStart = cairoDate.startOf('day').toDate();
-    const todayEnd = cairoDate.endOf('day').toDate();
+    // Get current date in local timezone
+    const timeZone = process.env.TIMEZONE;
+    const localTimeZoneDate = moment.tz(timeZone);
+    const todayStart = localTimeZoneDate.startOf('day').toDate();
+    const todayEnd = localTimeZoneDate.endOf('day').toDate();
 
     // Get the start and end timestamps for today
     const todayStartTimestamp = Math.floor(todayStart.getTime() / 1000);

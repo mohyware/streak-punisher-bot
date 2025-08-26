@@ -58,9 +58,9 @@ const getTodayStats = async (discordId) => {
             throw new Error('User not found');
         }
 
-        // Get current date in Cairo
-        const cairoDate = moment.tz("Africa/Cairo");
-        const todayStart = cairoDate.startOf('day').toDate();
+        // Get current date in local timezone
+        const localTimeZoneDate = moment.tz(process.env.TIMEZONE);
+        const todayStart = localTimeZoneDate.startOf('day').toDate();
 
         // return today problems
         const todaySolved = await Problem.find({ user: user._id, createdAt: { $gte: todayStart } });

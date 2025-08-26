@@ -8,7 +8,7 @@ const formatUserData = (user, problemCount) => {
         //{ label: '🌟 Other AC', value: problemCount, condition: problemCount > 0 },
         //{ label: '🔥 Streak', value: user.streak },
         { label: '🎯 Total AC', value: problemCount, condition: problemCount > 0 },
-        { label: '📅 Last Submission Date', value: user.lastSubmissionDate ? user.lastSubmissionDate.toLocaleDateString("en-EG", { timeZone: "Africa/Cairo" }) : null }
+        { label: '📅 Last Submission Date', value: user.lastSubmissionDate ? user.lastSubmissionDate.toLocaleDateString("en-EG", { timeZone: process.env.TIMEZONE }) : null }
     ];
 
     return fields
@@ -19,7 +19,7 @@ const formatUserData = (user, problemCount) => {
 
 const formatProblems = (stats) => {
     const statsFormatted = stats.todaySolved.map((item, index) => {
-        return `🔹 **Problem #${index + 1}:** ${item.title}  🆔${item.problemId}   🌐 **Platform:** ${item.platform}  📅 ${new Date(item.createdAt).toLocaleTimeString("en-EG", { timeZone: "Africa/Cairo" })}\n`;
+        return `🔹 **Problem #${index + 1}:** ${item.title}  🆔${item.problemId}   🌐 **Platform:** ${item.platform}  📅 ${new Date(item.createdAt).toLocaleTimeString("en-EG", { timeZone: process.env.TIMEZONE })}\n`;
 
     }).join('');
     return statsFormatted;
